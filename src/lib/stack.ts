@@ -9,16 +9,19 @@ export class CronCdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const lambdaFunction = new lambda.Function(this, "MyScheduledLambda", {
+    const foo = path.join(__dirname, "lambda");
+    console.log("foo ...", foo);
+
+    const lambdaFunction = new lambda.Function(this, "CronLambda", {
       runtime: lambda.Runtime.NODEJS_18_X,
       // Path to the Lambda function code
       code: lambda.Code.fromAsset(path.join(__dirname, "lambda")),
-      handler: "handler.handler",
+      handler: "handler",
     });
 
     // Define the cron schedule using EventBridge rule
-    const rule = new events.Rule(this, "LambdaScheduleRule", {
-      schedule: events.Schedule.rate(cdk.Duration.minutes(3)),
+    const rule = new events.Rule(this, "LambdaCronRule", {
+      schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
     });
 
     // Set the Lambda function as the target of the EventBridge rule
