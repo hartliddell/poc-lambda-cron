@@ -27,14 +27,8 @@
     "typescript": "~5.3.3"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.507.0",
-    "@aws-sdk/client-secrets-manager": "^3.637.0",
-    "@aws-sdk/lib-dynamodb": "^3.507.0",
-    "@fastify/aws-lambda": "^4.1.0",
-    "@symphoniacloud/cdk-website": "^0.1.0",
     "aws-cdk-lib": "2.125.0",
     "constructs": "^10.1.41",
-    "fastify": "^4.28.1",
     "uuid": "^9.0.1"
   }
 }
