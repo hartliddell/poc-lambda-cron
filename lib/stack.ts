@@ -1,40 +1,35 @@
-import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
-import * as sm from "aws-cdk-lib/aws-secretsmanager";
+import * as cdk from "aws-cdk-lib";
+import * as lambda from "aws-cdk-lib/aws-lambda";
+import * as events from "aws-cdk-lib/aws-events";
+import * as targets from "aws-cdk-lib/aws-events-targets";
+import * as path from "path";
 import { Construct } from "constructs";
-import { Duration, Stack, StackProps } from "aws-cdk-lib";
-import { LambdaRestApi, MethodLoggingLevel } from "aws-cdk-lib/aws-apigateway";
-import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
-import { Runtime } from "aws-cdk-lib/aws-lambda";
-import { Website } from "@symphoniacloud/cdk-website";
 
-export class CustomStack extends Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
+export class CronCdkStack extends cdk.Stack {
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const table = new dynamodb.Table(this, "StravaTable", {
-      partitionKey: { name: "id", type: dynamodb.AttributeType.STRING },
+    const lambdaFunction = new lambda.Function(this, "MyScheduledLambda", {
+      runtime: lambda.Runtime.NODEJS_18_X,
+      // Path to the Lambda function code
+      code: lambda.Code.fromAsset(path.join(__dirname, "./lambda")),
+      handler: "handler.handler",
     });
 
-    const fastifyLambda = new NodejsFunction(this, "FastifyLambda", {
-      runtime: Runtime.NODEJS_18_X,
-      entry: "lib/fastifyHandler.ts",
-      handler: "handler",
-      timeout: Duration.seconds(30),
+    // Define the cron schedule using EventBridge rule
+    const rule = new events.Rule(this, "LambdaScheduleRule", {
+      // Run every 3 minutes
+      schedule: events.Schedule.cron({
+        minute: "0/3",
+        hour: "*",
+        day: "*",
+        month: "*",
+        year: "*",
+        weekDay: "?",
+      }),
     });
 
-    table.grantReadWriteData(fastifyLambda);
-
-    new LambdaRestApi(this, "FastifyApi", {
-      handler: fastifyLambda,
-      proxy: true,
-      integrationOptions: {
-        timeout: Duration.seconds(29),
-      },
-      deployOptions: {
-        loggingLevel: MethodLoggingLevel.INFO,
-        dataTraceEnabled: true,
-        metricsEnabled: true,
-      },
-    });
+    // Set the Lambda function as the target of the EventBridge rule
+    rule.addTarget(new targets.LambdaFunction(lambdaFunction));
   }
 }
