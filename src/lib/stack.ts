@@ -12,7 +12,7 @@ export class CronCdkStack extends cdk.Stack {
     const lambdaFunction = new lambda.Function(this, "MyScheduledLambda", {
       runtime: lambda.Runtime.NODEJS_18_X,
       // Path to the Lambda function code
-      code: lambda.Code.fromAsset(path.join(__dirname, "./lambda")),
+      code: lambda.Code.fromAsset(path.join(__dirname, "lambda")),
       handler: "handler.handler",
     });
 
