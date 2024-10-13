@@ -18,15 +18,7 @@ export class CronCdkStack extends cdk.Stack {
 
     // Define the cron schedule using EventBridge rule
     const rule = new events.Rule(this, "LambdaScheduleRule", {
-      // Run every 3 minutes
-      schedule: events.Schedule.cron({
-        minute: "0/3",
-        hour: "*",
-        day: "*",
-        month: "*",
-        year: "*",
-        weekDay: "?",
-      }),
+      schedule: events.Schedule.rate(cdk.Duration.minutes(3)),
     });
 
     // Set the Lambda function as the target of the EventBridge rule
