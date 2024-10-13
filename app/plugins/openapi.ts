@@ -1,0 +1,43 @@
+import fp from "fastify-plugin";
+import swagger from "@fastify/swagger";
+import swaggerUi, { FastifySwaggerUiOptions } from "@fastify/swagger-ui";
+
+const logo =
+  "data:image/png;base64,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";
+
+const env = process.env.NODE_ENV || "";
+
+const uiOptions: FastifySwaggerUiOptions = {
+  routePrefix: "/docs",
+  uiConfig: {
+    layout: "BaseLayout",
+    deepLinking: false,
+  },
+  staticCSP: true,
+  transformSpecificationClone: true,
+  logo: {
+    type: "image/png",
+    content: Buffer.from(logo, "base64"),
+  },
+};
+
+export default fp((app) => {
+  if (env === "local") {
+    try {
+      app.register(swagger, {
+        openapi: {
+          info: {
+            title: "Strava app",
+            description: "Strava app documentation",
+            version: "1.0.0",
+          },
+        },
+      });
+
+      app.register(swaggerUi, uiOptions);
+    } catch (error) {
+      console.error("Error loading swagger plugin", error);
+    }
+  }
+  return app;
+});
