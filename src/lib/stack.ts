@@ -5,18 +5,16 @@ import * as targets from "aws-cdk-lib/aws-events-targets";
 import * as path from "path";
 import { Construct } from "constructs";
 
+import { handler } from "./lambda/handler";
+
 export class CronCdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const foo = path.join(__dirname, "lambda");
-    console.log("foo ...", foo);
-
     const lambdaFunction = new lambda.Function(this, "CronLambda", {
       runtime: lambda.Runtime.NODEJS_18_X,
-      // Path to the Lambda function code
-      code: lambda.Code.fromAsset(path.join(__dirname, "lambda")),
-      handler: "handler",
+      code: lambda.Code.fromAsset(path.join(__dirname, "../../dist")),
+      handler: "lib/lambda/handler.handler",
     });
 
     // Define the cron schedule using EventBridge rule
