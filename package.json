@@ -1,8 +1,8 @@
 {
-  "name": "strava",
+  "name": "cron",
   "version": "0.1.0",
   "bin": {
-    "strava": "bin/strava.js"
+    "cron": "bin/cron.js"
   },
   "scripts": {
     "build": "tsc",
